@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import Popover from "./components/Popover";
 
 const tickets = [
@@ -34,7 +34,23 @@ const tickets = [
 const Dashboard = () => {
   const [popover, setPopover] = useState(false);
   const [value, setValue] = useState("");
+  const [users,setUsers]=useState([])
+ useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/api/users");
+        const data = await response.json();
+        console.log("Fetched users:", data);
+        setUsers(data); // assuming backend returns {"users": [...]}
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
 
+    getUsers();
+  }, []);
+
+  
   return (
     <div className="min-h-screen min-w-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Header */}
@@ -72,9 +88,9 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-100">
-              {tickets.map((row) => (
+              {users.map((row) => (
                 <tr
-                  key={row.id}
+                  key={row.ticket_id}
                   className="border-b border-gray-100 last:border-none hover:bg-indigo-50/30 transition-colors duration-150 cursor-pointer group"
                   onClick={() => {
                     setPopover(true);
@@ -82,10 +98,10 @@ const Dashboard = () => {
                   }}
                 >
                   <td className="px-6 py-4 font-semibold text-gray-900 group-hover:text-indigo-700 transition-colors">
-                    #{row.id}
+                    #{row.ticket_id}
                   </td>
-                  <td className="px-6 py-4 font-medium text-gray-900 group-hover:text-indigo-700 transition-colors">
-                    {row.title}
+                  {/* <td className="px-6 py-4 font-medium text-gray-900 group-hover:text-indigo-700 transition-colors">
+                    {row.name}
                   </td>
                   <td className="px-6 py-4 text-center">
                     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
@@ -106,7 +122,7 @@ const Dashboard = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-center font-medium text-gray-700">{row.assignedTo}</td>
-                  <td className="px-6 py-4 text-center text-gray-500 text-xs font-medium">{row.createdAt}</td>
+                  <td className="px-6 py-4 text-center text-gray-500 text-xs font-medium">{row.createdAt}</td> */}
                 </tr>
               ))}
             </tbody>

@@ -1,32 +1,52 @@
-import React, { useState } from "react";
-import { useUser } from "@clerk/clerk-react";const Chatui = ({value,noInput=false}) => {
+import React, { useState ,useEffect} from "react";
+import { useUser } from "@clerk/clerk-react";
+import { SignOutButton } from '@clerk/clerk-react'
+const Chatui = () => {
     const user =useUser()
     console.log(user.user.id)
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hey there 👋, how can I assist you today?" },
-    { sender: "user", text: "Hi, I have an issue with my order." },
-    { sender: "bot", text: "Got it! Can you please share your order ID?" },
-  ]);
+   
+
+  const [messages, setMessages] = useState(
+    []
+  );
+  useEffect(() => {
+      const getUsers = async () => {
+        try {
+          const response = await fetch("http://127.0.0.1:5000/api/messsages",{
+            method:"POST",
+            headers: {
+            "Content-Type": "application/json",
+          },
+            body:JSON.stringify({user_id:user.user.id})
+        });
+          const data = await response.json();
+          console.log("Fetched users:", data);
+          setMessages(data.messages); 
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+      };
+  
+      getUsers();
+    }, []);
+  
   const [input, setInput] = useState("");
 
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const userMsg = { sender: "user", text: input };
-    const botMsg = { sender: "bot", text: "Sure! Checking details..." };
+    
 
-    setMessages((prev) => [...prev, userMsg]);
+    setMessages((prev) => [...prev, {sender:"user",text:input}]);
     setInput("");
 
-    setTimeout(() => {
-      setMessages((prev) => [...prev, botMsg]);
-    }, 800);
+  
   };
 
   return (
     <div className="min-h-screen min-w-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      {!noInput && <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-200/60 p-5 mb-6 flex items-center justify-between">
+      {<div className="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-200/60 p-5 mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900 tracking-tight mb-1">
             Customer Chat
@@ -34,6 +54,7 @@ import { useUser } from "@clerk/clerk-react";const Chatui = ({value,noInput=fals
           <p className="text-sm text-gray-500 font-medium">
             Connected to Support Bot 🤖
           </p>
+          <SignOutButton />
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs text-gray-500 font-medium">Online</span>
@@ -45,7 +66,7 @@ import { useUser } from "@clerk/clerk-react";const Chatui = ({value,noInput=fals
       {/* Chat Area */}
       <div className="flex-1 w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-200/60 flex flex-col justify-between overflow-hidden">
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4 scrollbar-thin scrollbar-thumb-gray-300">
-          {messages.map((msg, i) => (
+          {messages.length >0 && messages.map((msg, i) => (
             <div
               key={i}
               className={`flex ${
@@ -66,7 +87,7 @@ import { useUser } from "@clerk/clerk-react";const Chatui = ({value,noInput=fals
         </div>
 
         {/* Input Box */}
-        {!noInput &&<div className="border-t border-gray-200 bg-gray-50/50 p-4 flex items-center gap-3">
+        {<div className="border-t border-gray-200 bg-gray-50/50 p-4 flex items-center gap-3">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}

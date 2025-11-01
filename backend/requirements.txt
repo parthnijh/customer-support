@@ -1,0 +1,30 @@
+# LangChain Core
+langchain==0.3.25
+
+# OpenAI Integration
+
+# Anthropic Integration
+
+langchain-chroma
+langchain-community  # <-- install from GitHub
+
+# Google Gemini (PaLM) Integration
+langchain-google-genai
+google-generativeai
+
+# Hugging Face Integration
+
+
+# Environment Variable Management
+python-dotenv
+
+# Machine Learning Utilities
+
+
+
+# Flask and deployment
+flask
+gunicorn
+flask-cors
+pypdf
+pymongo[srv]
