@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-
-const Chatui = () => {
+import { useUser } from "@clerk/clerk-react";const Chatui = ({value,noInput=false}) => {
+    const user =useUser()
+    console.log(user.user.id)
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Hey there 👋, how can I assist you today?" },
     { sender: "user", text: "Hi, I have an issue with my order." },
@@ -25,7 +26,7 @@ const Chatui = () => {
   return (
     <div className="min-h-screen min-w-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-200/60 p-5 mb-6 flex items-center justify-between">
+      {!noInput && <div className="w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-200/60 p-5 mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-gray-900 tracking-tight mb-1">
             Customer Chat
@@ -39,6 +40,7 @@ const Chatui = () => {
           <div className="w-3 h-3 bg-green-500 rounded-full shadow-sm ring-2 ring-green-200"></div>
         </div>
       </div>
+    }
 
       {/* Chat Area */}
       <div className="flex-1 w-full max-w-3xl bg-white rounded-xl shadow-lg border border-gray-200/60 flex flex-col justify-between overflow-hidden">
@@ -64,14 +66,14 @@ const Chatui = () => {
         </div>
 
         {/* Input Box */}
-        <div className="border-t border-gray-200 bg-gray-50/50 p-4 flex items-center gap-3">
+        {!noInput &&<div className="border-t border-gray-200 bg-gray-50/50 p-4 flex items-center gap-3">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleSend()}
             type="text"
             placeholder="Type your message..."
-            className="flex-1 px-4 py-2.5 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-white"
+            className="flex-1 px-4 py-2.5 rounded-lg text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition bg-white text-black"
           />
           <button
             onClick={handleSend}
@@ -80,7 +82,9 @@ const Chatui = () => {
             Send
           </button>
         </div>
+        }
       </div>
+        
     </div>
   );
 };
