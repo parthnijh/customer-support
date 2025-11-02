@@ -30,15 +30,41 @@ const Chatui = () => {
       getUsers();
     }, []);
   
+  
+  
   const [input, setInput] = useState("");
 
-  const handleSend = () => {
+  const handleSend = async() => {
     if (!input.trim()) return;
+    
+  
+
 
     
-
+    
     setMessages((prev) => [...prev, {sender:"user",text:input}]);
     setInput("");
+    try {
+          const payload={"query":input,"chat_history":[...messages, { sender: "user", text: input }],"user_id":user.user.id}
+          const response = await fetch("http://127.0.0.1:5000/api/ask",{
+            method:"POST",
+            headers: {
+            "Content-Type": "application/json",
+          },
+
+            body:JSON.stringify(payload)
+        });
+          const data = await response.json();
+          console.log("Fetched answer", data);
+          if(data){
+            setMessages((prev)=>[...prev,{sender:"bot",text:data.answer}])
+
+          }
+           
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+    
 
   
   };
