@@ -1,5 +1,6 @@
 import React from "react";
 import Chatui from "../Chatui"; // adjust path if needed
+import ChatDashboard from "./ChatDashboard";
 
 const ChatPopover = ({ value, setPopover }) => {
   return (
@@ -26,7 +27,7 @@ const ChatPopover = ({ value, setPopover }) => {
         {/* Chat Body */}
         <div className="flex-1 bg-gray-100 flex items-center justify-center">
           <div className="w-full h-full overflow-hidden">
-            <Chatui value={value} noInput={true} />
+            <ChatDashboard value={value} noInput={true} />
           </div>
         </div>
       </div>

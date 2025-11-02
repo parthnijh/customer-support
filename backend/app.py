@@ -26,7 +26,9 @@ CORS(app)
 def get_messages():
     data=request.get_json()
     user_id=data.get("user_id")
-    ticket_id=data.get("ticket_id")
+    print(user_id[:4])
+    ticket_id=""
+    ticket_id="T"+user_id[:8]
     chat_history=[]
     doc=collection.find_one({"user_id":user_id})
     if(doc):
