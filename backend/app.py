@@ -4,14 +4,14 @@ from langchain_chroma import Chroma
 from langchain_core.output_parsers import StrOutputParser
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder
+from langchain_core.prompts import ChatPromptTemplate,MessagesPlaceholder,PromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import PyPDFLoader
 from dotenv import load_dotenv
 from flask_cors import CORS
 import os
 import requests
-
+from datetime import datetime,timezone
 client = MongoClient("mongodb+srv://parthnijhawan777_db_user:UBcgLTzibbfxGGEe@cluster0.wrbolal.mongodb.net/?appName=Cluster0")
 
 # Database and collection
@@ -33,13 +33,14 @@ def get_messages():
     ticket_id=""
     ticket_id="T"+user_id[:8]
     chat_history=[]
+    now = datetime.now(timezone.utc)
     doc=collection.find_one({"user_id":user_id})
     if(doc):
         chat_history=doc["messages"]
         print(chat_history)
         
     else:
-        collection.insert_one({"user_id":user_id,"messages":chat_history,"ticket_id":ticket_id})
+        collection.insert_one({"user_id":user_id,"messages":chat_history,"ticket_id":ticket_id,"createdAt":now})
 
     return jsonify({"messages":chat_history})
 
@@ -90,7 +91,7 @@ def convert(messages):
     return chat_history
 @app.route("/api/ask",methods=["POST"])
 def ask():
-
+    now = datetime.now(timezone.utc)
     data=request.get_json()
     messages=data.get("chat_history")
     user_id=data.get("user_id")
@@ -160,7 +161,10 @@ assistant: You’re very welcome! I’m glad I could help."""
     {"$push": {"messages": {"$each": [
         {"sender": "user", "text": messages[-1]["text"]},
         {"sender": "bot", "text": answer}
-    ]}}}
+    ]}}
+    },
+    {"$set": {"updatedAt": now}}
+    
 )
     return jsonify({"answer":answer})
 
@@ -171,6 +175,33 @@ def get_users():
 
     return jsonify(users)
 
+@app.route("/api/summary",methods=["POST"])
+def get_summary():
+    data=request.get_json()
+    messages=data.get("messages")
+    chat_history=convert(messages=messages)
+    model=ChatGoogleGenerativeAI(model="gemini-2.5-flash",api_key=os.getenv("GOOGLE_API_KEY"))
+    prompt = PromptTemplate(
+    template='''
+                You are an assistant summarizing customer support interactions.
+
+                Given the following chat history between a *customer* and a *RAG-powered support agent*:
+                {chat_history}
+
+                Write a clear, concise summary for the **company admin** that includes:
+                - The customer’s main question, issue, or request.
+                - The key points discussed or steps taken by the agent.
+                - Any resolution provided or pending action items.
+                - The overall tone or sentiment of the customer (if evident).
+
+                Keep the tone professional, factual, and easy to skim.
+            ''',
+             input_variables=["chat_history"]
+            )
+    parser=StrOutputParser()
+    chain=prompt | model | parser
+    result=chain.invoke({"chat_history":chat_history})
+    return jsonify({"result":result})
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
