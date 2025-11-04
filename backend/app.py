@@ -29,6 +29,7 @@ CORS(app)
 def get_messages():
     data=request.get_json()
     user_id=data.get("user_id")
+    email=data.get("email")
     print(user_id[:4])
     ticket_id=""
     ticket_id="T"+user_id[:8]
@@ -40,7 +41,7 @@ def get_messages():
         print(chat_history)
         
     else:
-        collection.insert_one({"user_id":user_id,"messages":chat_history,"ticket_id":ticket_id,"createdAt":now})
+        collection.insert_one({"user_id":user_id,"messages":chat_history,"ticket_id":ticket_id,"createdAt":now,"email":email})
 
     return jsonify({"messages":chat_history})
 
@@ -158,14 +159,21 @@ assistant: You’re very welcome! I’m glad I could help."""
     })
     collection.update_one(
     {"user_id": user_id},
-    {"$push": {"messages": {"$each": [
-        {"sender": "user", "text": messages[-1]["text"]},
-        {"sender": "bot", "text": answer}
-    ]}}
-    },
-    {"$set": {"updatedAt": now}}
-    
+    {
+        "$push": {
+            "messages": {
+                "$each": [
+                    {"sender": "user", "text": messages[-1]["text"]},
+                    {"sender": "bot", "text": answer}
+                ]
+            }
+        },
+        "$set": {"updatedAt": now}
+    }
 )
+
+    
+
     return jsonify({"answer":answer})
 
 
@@ -193,8 +201,12 @@ def get_summary():
                 - The key points discussed or steps taken by the agent.
                 - Any resolution provided or pending action items.
                 - The overall tone or sentiment of the customer (if evident).
+                Format it **neatly using plain text only** — 
+                - Use short sentences or numbered points instead of bullet symbols (* or -).  
+                - Avoid markdown formatting entirely.  
+               
 
-                Keep the tone professional, factual, and easy to skim.
+
             ''',
              input_variables=["chat_history"]
             )
