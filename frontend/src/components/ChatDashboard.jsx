@@ -39,7 +39,7 @@ const ChatDashboard = ({ value, noInput = false }) => {
 
       {/* Chat Box */}
       <div className="flex-1 w-full max-w-3xl bg-[#151922] border border-[#2a3140] rounded-xl shadow-lg flex flex-col justify-between overflow-hidden">
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4 scrollbar-thin scrollbar-thumb-[#2a3140] scrollbar-track-[#0e1014]">
+        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-4 scrollbar-thin scrollbar-thumb-[#2a3140] scrollbar-track-[#0e1014] hide-scrollbar">
           {messages.length === 0 ? (
             <div className="text-center text-gray-500 text-sm py-10">
               No messages yet. Start the conversation below 👇
