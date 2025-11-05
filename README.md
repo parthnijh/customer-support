@@ -14,10 +14,12 @@
 
 ## 🚀 Overview
 
-The **AI-Powered Customer Support Dashboard** is a full-stack application that integrates **real-time ticket management**, **AI chat summarization**, and **automated customer support**.
+The **AI-Powered Customer Support Dashboard** is a full-stack real-time support system that connects customers with an **AI-based chatbot** and enables admins to monitor, summarize, and manage tickets in real time.  
 
-It connects an **AI chatbot (via LangChain)** with a **React-based admin dashboard** and uses **Socket.IO** for instant communication between users and admins.  
-Admins can see new tickets, monitor live user–bot conversations, and summarize entire chat histories with one click.
+Built with **React, Flask, Node.js/Express, MongoDB, LangChain, and Socket.IO**, it allows:
+- Users to chat with an AI assistant.
+- Real-time ticket creation and updates.
+- Admins to view live conversations and generate AI summaries.
 
 ---
 
@@ -27,47 +29,77 @@ Admins can see new tickets, monitor live user–bot conversations, and summarize
 |-------|-------------|----------|
 | 🖥️ Frontend | **React + Tailwind CSS** | Interactive UI and real-time dashboard |
 | 🔧 Backend (Core) | **Flask** | Handles AI chatbot logic and Socket.IO events |
-| ⚡ Realtime Layer | **Socket.IO** | Pushes live ticket and message updates |
-| 🌐 File Upload(Backend) | **Node.js + Express** | Template Backend For Uploadthing|
-| 🧠 AI Layer | **LangChain + Google Generative AI** | RAG-powered responses and summaries |
-| 🗄️ Database | **MongoDB (Mongoose)** | Stores tickets, users, and chat history |
-| 🔐 Authentication | **Clerk** | Handles secure login for users and admins |
-| 📁 File Handling | **UploadThing** | Allows CSV/document uploads for context or logs |
+| 🌐 File Upload API | **Node.js + Express** | File upload backend for UploadThing |
+| ⚡ Realtime Layer | **Socket.IO** | Live updates for tickets and messages |
+| 🧠 AI Layer | **LangChain + Google Generative AI** | RAG-powered responses and chat summarization |
+| 🗄️ Database | **MongoDB (Mongoose)** | Stores users, tickets, and message history |
+| 🔐 Authentication | **Clerk** | Secure user/admin login system |
+| 📁 File Handling | **UploadThing** | For uploading logs, CSVs, or context files |
 
 ---
 
 ## ✨ Key Features
 
-### 💡 User Chat System
-- Interact with an **RAG AI assistant** using the companies policies as a knowledge base.
-- Each conversation automatically generates a **support ticket**.
-- Persistent chat history stored in MongoDB.
+### 💡 AI Chat System
+- RAG-based chatbot that replies using your company’s policies or uploaded files.
+- Every conversation auto-creates a **support ticket**.
+- Persistent conversation history in MongoDB.
 
 ### 📊 Admin Dashboard
-- **Real-time updates** when new tickets or messages arrive.
-- View complete user–bot chat history for any ticket.
-- **Summarize chats** using AI-generated overviews.
-- **File uploads** with UploadThing (for user data, logs, or attachments).
+- Real-time updates when new tickets/messages arrive.
+- Click any ticket to open the chat popover.
+- AI summarization for quick overviews.
+- File uploads for logs or reference documents.
 
-
-### 🔁 Realtime Functionality
-- Uses **Socket.IO** to sync messages instantly.
-- No refresh needed for new tickets or updates.
-- Automatically updates chat popovers when messages arrive.
+### 🔁 Realtime Updates
+- Powered by **Socket.IO** for instant sync.
+- Dashboard updates automatically — no refresh needed.
+- Admin chat view stays live as users interact.
 
 ### 🧾 AI Summarization
-- Flask backend integrates **LangChain** to summarize conversations.
-- Generates short, actionable insights for admins.
+- Flask backend integrates **LangChain**.
+- One-click summarization of entire conversations.
 
 ---
 
 ## 🧠 How It Works
 
-1. A user starts chatting with the AI chatbot.  
-2. Flask processes the message → uses RAG Chatbot to respond.  
-3. The backend saves the chat to MongoDB and emits a **Socket.IO event**.  
-4. The **React dashboard** instantly receives the update without reloading.  
-5. Admins can open any ticket to view the conversation live.  
-6. “Summarize” button triggers Flask + LangChain to summarize chat history.  
-7. UploadThing supports document uploads for contextual assistance.
+1. User sends a message via chatbot UI.  
+2. Flask processes message → generates AI response (LangChain).  
+3. Message and ticket are saved in MongoDB.  
+4. Flask emits a **Socket.IO event**.  
+5. React dashboard instantly receives and displays the update.  
+6. Admin can open any chat and view it live.  
+7. “Summarize” button triggers Flask → LangChain → returns a condensed summary.  
+8. UploadThing handles CSV/log uploads for context.
 
+---
+
+## 🖼️ Project UI Preview
+
+### 🧭 Dashboard Overview  
+<p align="center">
+  <img src="./images/dashboard1.png" width="45%" />
+  <img src="./images/dashboard2.png" width="45%" />
+</p>
+
+### 💬 Chat interface from dashboard 
+<p align="center">
+  <img src="./images/dashboard3.png" width="45%" />
+ 
+</p>
+
+##   💬 Chat interface from user side
+<p align="center">
+  <img src="./images/userui.png" width="45%" />
+</p>
+
+
+---
+
+## ⚡ Installation & Setup
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/your-username/ai-support-dashboard.git
+cd ai-support-dashboard
