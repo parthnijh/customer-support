@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
 import {FaRobot,FaUser} from "react-icons/fa"
 const ChatDashboard = ({ value, noInput = false }) => {
   const user = useUser();
   const [messages, setMessages] = useState(value.messages || []);
+  useEffect(() => {
+  setMessages(value.messages || []);
+}, [value.messages]);
   const [input, setInput] = useState("");
 
   const handleSend = () => {

@@ -9,11 +9,12 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders import PyPDFLoader
 from dotenv import load_dotenv
 from flask_cors import CORS
+from flask_socketio import SocketIO,emit
 import os
 import requests
 from datetime import datetime,timezone
 client = MongoClient("mongodb+srv://parthnijhawan777_db_user:UBcgLTzibbfxGGEe@cluster0.wrbolal.mongodb.net/?appName=Cluster0")
-
+load_dotenv()
 # Database and collection
 db = client["user_db"]              # create/use a database
 collection = db["user_data"]
@@ -25,6 +26,7 @@ except Exception as e:
 
 app=Flask(__name__)
 CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 @app.route("/api/messsages",methods=["POST"])
 def get_messages():
     data=request.get_json()
@@ -42,6 +44,9 @@ def get_messages():
         
     else:
         collection.insert_one({"user_id":user_id,"messages":chat_history,"ticket_id":ticket_id,"createdAt":now,"email":email})
+        socketio.emit("new_ticket",{
+            "user_id":user_id,"messages":chat_history,"ticket_id":ticket_id,"createdAt":now.isoformat(),"email":email
+        })
 
     return jsonify({"messages":chat_history})
 
@@ -171,6 +176,16 @@ assistant: You’re very welcome! I’m glad I could help."""
         "$set": {"updatedAt": now}
     }
 )
+    socketio.emit("new_message", {
+    "user_id": user_id,
+    "ticket_id": "T" + user_id[:8],
+    "messages": [
+        {"sender": "user", "text": messages[-1]["text"]},
+        {"sender": "bot", "text": answer}
+    ],
+    "timestamp": now.isoformat()
+    })
+
 
     
 
@@ -216,4 +231,4 @@ def get_summary():
     return jsonify({"result":result})
 
 if __name__ == '__main__':
-    app.run(port=5000, debug=True)
+    socketio.run(app,port=5000, debug=True)

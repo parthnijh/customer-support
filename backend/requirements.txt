@@ -28,3 +28,5 @@ gunicorn
 flask-cors
 pypdf
 pymongo[srv]
+flask-socketio 
+eventlet

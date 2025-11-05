@@ -3,7 +3,9 @@ import Popover from "./components/Popover";
 import ReactMarkdown from "react-markdown"
 import SummaryPopover from "./components/SummaryPopover";
 import FileUploader from "./FileUploader";
+import {io} from "socket.io-client"
 const Dashboard = () => {
+  const socket=io("http://127.0.0.1:5000")
   const [popover, setPopover] = useState(false);
   const [value, setValue] = useState(null);
   const [tickets, setTickets] = useState([]);
@@ -23,7 +25,44 @@ const Dashboard = () => {
       }
     };
     getTickets();
+
+    socket.on("new_ticket", (ticket) => {
+    console.log("🆕 New ticket received:", ticket);
+    setTickets((prev) => [...prev, ticket]);
+  });
+
+  socket.on("new_message", (data) => {
+    console.log("💬 New message:", data);
+    const { ticket_id, messages: newMessages } = data;
+
+   
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.ticket_id === ticket_id
+          ? {
+              ...t,
+              messages: [...(t.messages || []), ...newMessages],
+             
+            }
+          : t
+      )
+    );
+  });
+
+  // Cleanup on unmount
+  return () => {
+    socket.off("new_ticket");
+    socket.off("new_message");
+  }
   }, []);
+  useEffect(() => {
+  if (popover && value) {
+    const updatedTicket = tickets.find((t) => t.ticket_id === value.ticket_id);
+    if (updatedTicket) {
+      setValue(updatedTicket);
+    }
+  }
+}, [tickets, popover]);
 
 
     const getSummary = async () => {
@@ -149,7 +188,7 @@ const Dashboard = () => {
               
                 filteredTickets.map((row) => (
                   <tr
-                    key={row.ticket_id}
+                    key={row.user_id}
                     className="hover:bg-[#1c2230] transition-colors duration-150 cursor-pointer group text-center"
                     
                   >
