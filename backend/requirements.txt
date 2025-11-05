@@ -30,3 +30,5 @@ pypdf
 pymongo[srv]
 flask-socketio 
 eventlet
+requests
+gunicorn

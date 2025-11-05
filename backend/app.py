@@ -13,8 +13,9 @@ from flask_socketio import SocketIO,emit
 import os
 import requests
 from datetime import datetime,timezone
-client = MongoClient("mongodb+srv://parthnijhawan777_db_user:UBcgLTzibbfxGGEe@cluster0.wrbolal.mongodb.net/?appName=Cluster0")
+
 load_dotenv()
+client = MongoClient(os.getenv("MONGO_URI"))
 # Database and collection
 db = client["user_db"]              # create/use a database
 collection = db["user_data"]
@@ -231,4 +232,5 @@ def get_summary():
     return jsonify({"result":result})
 
 if __name__ == '__main__':
-    socketio.run(app,port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    socketio.run(app, host="0.0.0.0", port=port)
