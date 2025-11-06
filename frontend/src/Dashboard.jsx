@@ -17,7 +17,7 @@ const Dashboard = () => {
   useEffect(() => {
     const getTickets = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/api/users");
+        const response = await fetch("https://customer-support-x0lj.onrender.com/api/users");
         const data = await response.json();
         setTickets(data || []);
       } catch (error) {
